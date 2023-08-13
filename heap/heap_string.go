@@ -1,10 +1,11 @@
 package heap
 
 type HeapString struct {
-	S string
+	S     string
+	index int
 }
 
-func (s1 HeapString) Compare(s2 HeapString) int {
+func (s1 *HeapString) Compare(s2 *HeapString) int {
 
 	if s1.S == s2.S {
 		return 0
@@ -15,12 +16,25 @@ func (s1 HeapString) Compare(s2 HeapString) int {
 	return -1
 }
 
-func (s HeapString) GetMin() HeapString {
+func (s *HeapString) GetMin() *HeapString {
 	return GetHeapString("")
 }
 
-func GetHeapString(s string) HeapString {
-	return HeapString{
-		S: s,
+func (s *HeapString) GetIndex() int {
+	return s.index
+}
+
+func (s *HeapString) SetIndex(index int) {
+	s.index = index
+}
+
+func GetHeapString(s string) *HeapString {
+	return &HeapString{
+		S:     s,
+		index: -1,
 	}
+}
+
+func (s *HeapString) String() string {
+	return s.S
 }

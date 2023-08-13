@@ -20,6 +20,8 @@ func GetHeap[T Heapable[T]]() *Heap[T] {
 // Heap Operatrions
 func (heap *Heap[T]) Add(val T) {
 	// add element tio heap
+
+	val.SetIndex(heap.size)
 	heap.size += 1
 	heap.arr = append(heap.arr, val)
 
@@ -40,7 +42,7 @@ func (heap *Heap[T]) Pop() (*T, error) {
 		return nil, errors.New("invalid operation: heap is empty")
 	}
 
-	heap.arr[0], heap.arr[heap.size-1] = heap.arr[heap.size-1], heap.arr[0]
+	heap.Swap(0, heap.size-1)
 	heap.size -= 1
 
 	// shift to restore heap
@@ -55,6 +57,43 @@ func (heap *Heap[T]) DecreaseKey(index int) error {
 
 	heap.arr[index] = heap.arr[index].GetMin()
 	heap.HepifyUp(index)
+	return nil
+}
+
+func (heap *Heap[T]) DecreaseKeyWith(index int, new T) error {
+	if index >= heap.size {
+		return errors.New("index out of bound")
+	}
+
+	if heap.arr[index].Compare(new) != 1 {
+		return errors.New("updating value should be less than the current")
+	}
+
+	heap.arr[index] = new
+	heap.HepifyUp(index)
+	return nil
+}
+
+func (heap *Heap[T]) IncreaseKeyWith(index int, new T) error {
+	if index >= heap.size {
+		return errors.New("index out of bound")
+	}
+
+	if heap.arr[index].Compare(new) != -1 {
+		return errors.New("updating value should be greater than the current")
+	}
+
+	heap.arr[index] = new
+	heap.HepifyDown(index)
+	return nil
+}
+
+func (heap *Heap[T]) Delete(index int) error {
+	if index >= heap.size {
+		return errors.New("index out of bound")
+	}
+
+	heap.DecreaseKey(index)
 	heap.Pop()
 	return nil
 }
@@ -64,6 +103,20 @@ func (heap *Heap[T]) IsEmpty() bool {
 }
 
 // Helper Functions
+func (heap *Heap[T]) Swap(index1 int, index2 int) error {
+	if index1 >= heap.size {
+		return errors.New("index1 is out of bound")
+	}
+
+	if index2 >= heap.size {
+		return errors.New("index1 is out of bound")
+	}
+
+	heap.arr[index1], heap.arr[index2] = heap.arr[index2], heap.arr[index1]
+	heap.arr[index1].SetIndex(index1)
+	heap.arr[index2].SetIndex(index2)
+	return nil
+}
 
 // shift-up to restore heap
 func (heap *Heap[T]) HepifyUp(index int) {
@@ -73,7 +126,7 @@ func (heap *Heap[T]) HepifyUp(index int) {
 	}
 
 	// swap
-	heap.arr[index], heap.arr[parentIndex] = heap.arr[parentIndex], heap.arr[index]
+	heap.Swap(index, parentIndex)
 	heap.HepifyUp(parentIndex)
 }
 
@@ -97,7 +150,7 @@ func (heap *Heap[T]) HepifyDown(index int) {
 	}
 
 	// swap parant with smallest child
-	heap.arr[index], heap.arr[smallest] = heap.arr[smallest], heap.arr[index]
+	heap.Swap(index, smallest)
 	heap.HepifyDown(smallest)
 }
 
