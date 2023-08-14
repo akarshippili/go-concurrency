@@ -19,6 +19,7 @@ func (balancer *Balancer) Balance() {
 			balancer.Assign(request)
 		case worker := <-balancer.DoneCh:
 			balancer.Done(worker)
+		default:
 		}
 	}
 }
