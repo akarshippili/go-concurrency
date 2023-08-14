@@ -22,8 +22,12 @@ func (heap *Heap[T]) Add(val T) {
 	// add element tio heap
 
 	val.SetIndex(heap.size)
+	if heap.size < len(heap.arr) {
+		heap.arr[heap.size] = val
+	} else {
+		heap.arr = append(heap.arr, val)
+	}
 	heap.size += 1
-	heap.arr = append(heap.arr, val)
 
 	// shift to restore heap
 	heap.HepifyUp(heap.size - 1)
@@ -100,6 +104,10 @@ func (heap *Heap[T]) Delete(index int) error {
 
 func (heap *Heap[T]) IsEmpty() bool {
 	return heap.size == 0
+}
+
+func (heap *Heap[T]) GetNumOfElements() int {
+	return heap.size
 }
 
 // Helper Functions
