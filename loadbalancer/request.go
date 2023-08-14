@@ -1,6 +1,7 @@
 package loadbalancer
 
 type Request struct {
-	Fn func() int
-	C  chan int
+	Fn  func(arg int) int
+	C   chan int
+	Arg int
 }

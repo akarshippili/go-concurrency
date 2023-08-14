@@ -14,9 +14,11 @@ func GetWorker() *Worker {
 	}
 }
 
-func (worker *Worker) Work() {
-	for request := range worker.Requests {
-		request.C <- request.Fn()
+func (worker *Worker) Work(balancer *Balancer) {
+	for {
+		request := <-worker.Requests
+		request.C <- request.Fn(request.Arg)
+		balancer.DoneCh <- worker
 	}
 }
 

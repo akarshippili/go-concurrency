@@ -69,7 +69,7 @@ func (heap *Heap[T]) DecreaseKeyWith(index int, new T) error {
 		return errors.New("index out of bound")
 	}
 
-	if heap.arr[index].Compare(new) != 1 {
+	if heap.arr[index].Compare(new) == -1 {
 		return errors.New("updating value should be less than the current")
 	}
 
@@ -83,7 +83,8 @@ func (heap *Heap[T]) IncreaseKeyWith(index int, new T) error {
 		return errors.New("index out of bound")
 	}
 
-	if heap.arr[index].Compare(new) != -1 {
+	// current val is already > new val
+	if heap.arr[index].Compare(new) == 1 {
 		return errors.New("updating value should be greater than the current")
 	}
 

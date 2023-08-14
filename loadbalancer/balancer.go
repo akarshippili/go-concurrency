@@ -6,10 +6,8 @@ import (
 	"github.com/akarshippili/go-concurrency/heap"
 )
 
-type Pool *heap.Heap[*Worker]
-
 type Balancer struct {
-	Pool   Pool
+	Pool   *heap.Heap[*Worker]
 	Queue  chan Request
 	DoneCh chan *Worker
 }
@@ -18,14 +16,26 @@ func (balancer *Balancer) Balance() {
 	for {
 		select {
 		case request := <-balancer.Queue:
-			fmt.Println(request)
+			balancer.Assign(request)
 		case worker := <-balancer.DoneCh:
-			fmt.Println(*worker)
-		default:
-			fmt.Println("Nothing! Just Hanging Around!!!")
+			balancer.Done(worker)
 		}
 	}
 }
 
-func (balancer *Balancer) Assign() {}
-func (balancer *Balancer) Done()   {}
+func (balancer *Balancer) Assign(req Request) {
+	worker, err := balancer.Pool.Pop()
+	if err != nil {
+		fmt.Println("error while assigning task to worker")
+	}
+
+	(*worker).NumRequests += 1
+	(*worker).Requests <- req
+	balancer.Pool.Add(*worker)
+}
+
+func (balancer *Balancer) Done(worker *Worker) {
+	workerPool := balancer.Pool
+	worker.NumRequests -= 1
+	workerPool.DecreaseKeyWith(worker.GetIndex(), worker)
+}

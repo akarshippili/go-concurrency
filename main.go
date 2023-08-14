@@ -3,27 +3,34 @@ package main
 import (
 	"fmt"
 
-	"github.com/akarshippili/go-concurrency/heap"
 	"github.com/akarshippili/go-concurrency/loadbalancer"
 )
 
 func main() {
-	numWorkers := 10
-	c := make(chan int)
-	var workerPool loadbalancer.Pool = heap.GetHeap[*loadbalancer.Worker]()
+	balancer := loadbalancer.Listen(10)
+	out := make(chan int)
 
-	lb := loadbalancer.Balancer{
-		Queue:  make(chan loadbalancer.Request),
-		DoneCh: make(chan *loadbalancer.Worker),
-		Pool:   workerPool,
+	go func() {
+		for i := 0; i < 100; i++ {
+			balancer.Queue <- loadbalancer.Request{
+				Fn:  fib,
+				Arg: 10,
+				C:   out,
+			}
+		}
+	}()
+
+	for {
+		res := <-out
+		fmt.Println("response ", res)
 	}
+}
 
-	fmt.Println(lb, c)
-
-	for num := 0; num < numWorkers; num++ {
-		worker := loadbalancer.GetWorker()
-		go worker.Work()
+func fib(num int) int {
+	if num == 0 || num == 1 {
+		return 1
 	}
+	return fib(num-1) + fib(num-2)
 }
 
 // ------------------------------------------------------ //
