@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/akarshippili/go-concurrency/loadbalancer"
 )
@@ -11,10 +12,10 @@ func main() {
 	out := make(chan int)
 
 	go func() {
-		for i := 0; i < 100; i++ {
+		for i := 0; i < 1000; i++ {
 			balancer.Queue <- loadbalancer.Request{
-				Fn:  fib,
-				Arg: 10,
+				Fn:  ioWork,
+				Arg: 30,
 				C:   out,
 			}
 		}
@@ -26,6 +27,13 @@ func main() {
 	}
 }
 
+// io bound task
+func ioWork(x int) int {
+	time.Sleep(time.Second * 2)
+	return 0
+}
+
+// cpu bound task
 func fib(num int) int {
 	if num == 0 || num == 1 {
 		return 1

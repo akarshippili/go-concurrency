@@ -1,17 +1,19 @@
 package heap
 
-import "errors"
+import (
+	"errors"
+)
 
 // min-heap
 type Heap[T Heapable[T]] struct {
 	size int
-	arr  []T
+	Arr  []T
 }
 
 func GetHeap[T Heapable[T]]() *Heap[T] {
 	heap := Heap[T]{
 		size: 0,
-		arr:  make([]T, 0),
+		Arr:  make([]T, 0),
 	}
 
 	return &heap
@@ -22,10 +24,10 @@ func (heap *Heap[T]) Add(val T) {
 	// add element tio heap
 
 	val.SetIndex(heap.size)
-	if heap.size < len(heap.arr) {
-		heap.arr[heap.size] = val
+	if heap.size < len(heap.Arr) {
+		heap.Arr[heap.size] = val
 	} else {
-		heap.arr = append(heap.arr, val)
+		heap.Arr = append(heap.Arr, val)
 	}
 	heap.size += 1
 
@@ -38,7 +40,7 @@ func (heap *Heap[T]) Peek() (*T, error) {
 		return nil, errors.New("invalid operation: heap is empty")
 	}
 
-	return &(heap.arr[0]), nil
+	return &(heap.Arr[0]), nil
 }
 
 func (heap *Heap[T]) Pop() (*T, error) {
@@ -51,7 +53,7 @@ func (heap *Heap[T]) Pop() (*T, error) {
 
 	// shift to restore heap
 	heap.HepifyDown(0)
-	return &heap.arr[heap.size], nil
+	return &heap.Arr[heap.size], nil
 }
 
 func (heap *Heap[T]) DecreaseKey(index int) error {
@@ -59,7 +61,7 @@ func (heap *Heap[T]) DecreaseKey(index int) error {
 		return errors.New("index out of bound")
 	}
 
-	heap.arr[index] = heap.arr[index].GetMin()
+	heap.Arr[index] = heap.Arr[index].GetMin()
 	heap.HepifyUp(index)
 	return nil
 }
@@ -69,11 +71,11 @@ func (heap *Heap[T]) DecreaseKeyWith(index int, new T) error {
 		return errors.New("index out of bound")
 	}
 
-	if heap.arr[index].Compare(new) == -1 {
+	if heap.Arr[index].Compare(new) == -1 {
 		return errors.New("updating value should be less than the current")
 	}
 
-	heap.arr[index] = new
+	heap.Arr[index] = new
 	heap.HepifyUp(index)
 	return nil
 }
@@ -84,11 +86,11 @@ func (heap *Heap[T]) IncreaseKeyWith(index int, new T) error {
 	}
 
 	// current val is already > new val
-	if heap.arr[index].Compare(new) == 1 {
+	if heap.Arr[index].Compare(new) == 1 {
 		return errors.New("updating value should be greater than the current")
 	}
 
-	heap.arr[index] = new
+	heap.Arr[index] = new
 	heap.HepifyDown(index)
 	return nil
 }
@@ -121,16 +123,16 @@ func (heap *Heap[T]) Swap(index1 int, index2 int) error {
 		return errors.New("index1 is out of bound")
 	}
 
-	heap.arr[index1], heap.arr[index2] = heap.arr[index2], heap.arr[index1]
-	heap.arr[index1].SetIndex(index1)
-	heap.arr[index2].SetIndex(index2)
+	heap.Arr[index1], heap.Arr[index2] = heap.Arr[index2], heap.Arr[index1]
+	heap.Arr[index1].SetIndex(index1)
+	heap.Arr[index2].SetIndex(index2)
 	return nil
 }
 
 // shift-up to restore heap
 func (heap *Heap[T]) HepifyUp(index int) {
 	parentIndex := GetParentIndex(index)
-	if heap.arr[index].Compare(heap.arr[parentIndex]) >= 0 {
+	if heap.Arr[index].Compare(heap.Arr[parentIndex]) >= 0 {
 		return
 	}
 
@@ -145,11 +147,11 @@ func (heap *Heap[T]) HepifyDown(index int) {
 	leftChildIndex := GetLeftChildIndex(index)
 	rightChildIndex := GetRightChildIndex(index)
 
-	if leftChildIndex < heap.size && heap.arr[smallest].Compare(heap.arr[leftChildIndex]) == 1 {
+	if leftChildIndex < heap.size && heap.Arr[smallest].Compare(heap.Arr[leftChildIndex]) == 1 {
 		smallest = leftChildIndex
 	}
 
-	if rightChildIndex < heap.size && heap.arr[smallest].Compare(heap.arr[rightChildIndex]) == 1 {
+	if rightChildIndex < heap.size && heap.Arr[smallest].Compare(heap.Arr[rightChildIndex]) == 1 {
 		smallest = rightChildIndex
 	}
 

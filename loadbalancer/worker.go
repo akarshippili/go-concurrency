@@ -1,14 +1,19 @@
 package loadbalancer
 
 type Worker struct {
-	Requests    chan Request
-	NumRequests int
-	index       int
+	Requests           chan Request
+	NumRequests        int
+	index              int
+	NumRequestsHandled int
 }
 
-func GetWorker() *Worker {
+func (worker *Worker) GetNumOfReuestsHandled() int {
+	return worker.NumRequestsHandled
+}
+
+func GetWorker(bufferSize int) *Worker {
 	return &Worker{
-		Requests:    make(chan Request),
+		Requests:    make(chan Request, bufferSize),
 		index:       -1,
 		NumRequests: 0,
 	}

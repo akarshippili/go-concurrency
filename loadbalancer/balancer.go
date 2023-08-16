@@ -38,5 +38,13 @@ func (balancer *Balancer) Assign(req Request) {
 func (balancer *Balancer) Done(worker *Worker) {
 	workerPool := balancer.Pool
 	worker.NumRequests -= 1
+	worker.NumRequestsHandled += 1
 	workerPool.DecreaseKeyWith(worker.GetIndex(), worker)
+}
+
+func (balancer *Balancer) Log() {
+	for _, worker := range balancer.Pool.Arr {
+		fmt.Printf(" %v / %v ", worker.GetNumOfReuestsHandled(), worker.NumRequests)
+	}
+	fmt.Printf("\n")
 }

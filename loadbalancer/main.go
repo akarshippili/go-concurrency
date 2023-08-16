@@ -1,6 +1,8 @@
 package loadbalancer
 
 import (
+	"time"
+
 	"github.com/akarshippili/go-concurrency/heap"
 )
 
@@ -13,11 +15,17 @@ func Listen(numWorkers int) *Balancer {
 	}
 
 	for num := 0; num < numWorkers; num++ {
-		worker := GetWorker()
+		worker := GetWorker(99)
 		lb.Pool.Add(worker)
 		go worker.Work(&lb)
 	}
 
 	go func() { lb.Balance() }()
+	go func() {
+		for {
+			lb.Log()
+			time.Sleep(time.Second)
+		}
+	}()
 	return &lb
 }
