@@ -29,7 +29,7 @@ func main() {
 
 // io bound task
 func ioWork(x int) int {
-	time.Sleep(time.Second * 2)
+	time.Sleep(time.Millisecond * 2)
 	return 0
 }
 

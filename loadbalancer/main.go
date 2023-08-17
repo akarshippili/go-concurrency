@@ -15,7 +15,7 @@ func Listen(numWorkers int) *Balancer {
 	}
 
 	for num := 0; num < numWorkers; num++ {
-		worker := GetWorker(99)
+		worker := GetWorker(10)
 		lb.Pool.Add(worker)
 		go worker.Work(&lb)
 	}
