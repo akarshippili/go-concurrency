@@ -2,6 +2,7 @@ package loadbalancer
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/akarshippili/go-concurrency/heap"
 )
@@ -25,7 +26,18 @@ func (balancer *Balancer) Balance() {
 }
 
 func (balancer *Balancer) Assign(req Request) {
-	worker, err := balancer.Pool.Pop()
+	worker, err := balancer.Pool.Peek()
+	if err != nil {
+		fmt.Println("error while assigning task to worker")
+	}
+
+	if len((*worker).Requests) == cap((*worker).Requests) {
+		go func() { balancer.Queue <- req }()
+		time.Sleep(time.Second)
+		return
+	}
+
+	worker, err = balancer.Pool.Pop()
 	if err != nil {
 		fmt.Println("error while assigning task to worker")
 	}
