@@ -2,7 +2,6 @@ package loadbalancer
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/akarshippili/go-concurrency/heap"
 )
@@ -33,7 +32,6 @@ func (balancer *Balancer) Assign(req Request) {
 
 	if len((*worker).Requests) == cap((*worker).Requests) {
 		go func() { balancer.Queue <- req }()
-		time.Sleep(time.Second)
 		return
 	}
 
