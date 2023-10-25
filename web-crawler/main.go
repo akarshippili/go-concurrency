@@ -65,12 +65,20 @@ func main() {
 	// log.Default().Println(content)
 	// log.Default().Println(relatedUrls)
 
+	defer func() {
+		if msg := recover(); msg != nil {
+			log.Default().Println(msg)
+		}
+	}()
+
 	crawler := Crawler{
 		visited:   make(map[string]bool),
 		n:         1000,
 		readCount: 0,
 	}
 
-	crawler.crawl("http://amazon.com/")
+	crawler.wg.Add(1)
+	crawler.crawl("https://en.wikipedia.org/wiki")
 	crawler.wg.Wait()
+	log.Default().Printf("%v %v\n", crawler.readCount, len(crawler.visited))
 }

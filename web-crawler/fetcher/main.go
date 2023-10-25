@@ -2,7 +2,6 @@ package fetcher
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -12,15 +11,13 @@ import (
 func GetBody(url string) (string, error) {
 	response, err := http.Get(url)
 	if err != nil {
-		fmt.Println(err.Error())
 		return "", errors.New("error while making http request: " + err.Error())
 	}
 
+	defer response.Body.Close()
 	body, err := io.ReadAll(response.Body)
-	response.Body.Close()
 
 	if err != nil {
-		fmt.Println(err.Error())
 		return "", errors.New("error while making http request: " + err.Error())
 	}
 
@@ -48,7 +45,8 @@ func GetLinksFromBody(body string) ([]string, error) {
 func GetRelatedLinks(url string) []string {
 	body, err := GetBody(url)
 	if err != nil {
-		log.Default().Fatal(err.Error())
+		log.Default().Println(err.Error())
+		return nil
 	}
 
 	ans, err := GetLinksFromBody(body)
